@@ -1,6 +1,7 @@
 const User = require("../models/userModel");
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
+const BlacklistedToken = require("../models/blacklistedTockenModel");
 
 exports.getAllUsers = (req, res) => {
   User.find()
@@ -93,4 +94,85 @@ exports.userLogin = (req, res) => {
     .catch((err) => {
       res.status(500).json({ error: err.message });
     });
+};
+
+exports.getUserById = (req, res) => {
+  User.findById(req.params.userId)
+    .then((user) => {
+      if (!user) {
+        return res.status(404).json({ message: "User not found" });
+      }
+      res
+        .status(200)
+        .json({ message: "User retrieved successfully", data: user });
+    })
+    .catch((err) => {
+      res.status(500).json({ error: err.message });
+    });
+};
+
+exports.updateUser = async (req, res) => {
+  await User.findByIdAndUpdate(req.params.userId, req.body)
+    .then((user) => {
+      if (!user) {
+        return res.status(404).json({ message: "User not found" });
+      }
+      res
+        .status(200)
+        .json({ message: "User updated successfully", data: req.body });
+    })
+    .catch((err) => {
+      res.status(500).json({ error: err.message });
+    });
+};
+
+exports.deleteUser = (req, res) => {
+  User.findByIdAndDelete(req.params.userId)
+    .then((user) => {
+      if (!user) {
+        return res.status(404).json({ message: "User not found" });
+      }
+      res.status(200).json({ message: "User deleted successfully" });
+    })
+    .catch((err) => {
+      res.status(500).json({ error: err.message });
+    });
+};
+
+exports.getUserWorkspaces = (req, res) => {
+  User.findById(req.params.userId)
+    .populate("workspaces")
+    .then((user) => {
+      if (!user) {
+        return res.status(404).json({ message: "User not found" });
+      }
+      res.status(200).json({ data: user.workspaces });
+    })
+    .catch((err) => {
+      res.status(500).json({ error: err.message });
+    });
+};
+
+exports.userLogout = async (req, res) => {
+  const token = req.header("Authorization");
+
+  if (!token) {
+    return res
+      .status(401)
+      .json({ message: "Unauthorized HTTP, Token not provided" });
+  }
+
+  const jwtToken = token.replace("Bearer", "").trim();
+
+  try {
+    const decoded = jwt.verify(jwtToken, process.env.JWT_SECRET);
+
+    // Save token to blacklist
+    const expiresAt = new Date(decoded.exp * 1000); // JWT exp is in seconds
+    await BlacklistedToken.create({ token, expiresAt });
+
+    return res.json({ message: "Logged out successfully" });
+  } catch (err) {
+    return res.status(400).json({ message: "Invalid token" });
+  }
 };

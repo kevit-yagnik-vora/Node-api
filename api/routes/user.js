@@ -1,16 +1,17 @@
 const express = require("express");
 const router = express.Router();
 const userController = require("../controllers/userController");
+const authMiddleware = require("../middleware/authMiddleware");
 
-
-router.get("/getAllUsers", userController.getAllUsers);
 
 router.post("/addUser", userController.addUser);
-
 router.post("/login", userController.userLogin);
-router.post("/test", (req, res) => {
-  // This is just a test endpoint
-  res.status(200).send({ message: "POST Request is called" });
-});
+router.get("/getAllUsers",authMiddleware, userController.getAllUsers);
+router.get("/:userId",authMiddleware, userController.getUserById);
+router.put("/:userId",authMiddleware, userController.updateUser);
+router.delete("/:userId", authMiddleware, userController.deleteUser);
+router.post("/logout", authMiddleware, userController.userLogout);
+// router.get("/:userId/workspaces", userController.getUserWorkspaces);
+
 
 module.exports = router;
