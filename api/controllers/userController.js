@@ -1,9 +1,10 @@
 const User = require("../models/userModel");
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
-const BlacklistedToken = require("../models/blacklistedTockenModel");
+const BlacklistedToken = require("../models/blacklistedTokenModel");
 
 exports.getAllUsers = (req, res) => {
+  console.log(req.user.workspaces)
   User.find()
     .then((users) => {
       res.status(200).json({ data: users });
@@ -78,10 +79,11 @@ exports.userLogin = (req, res) => {
               email: user.email,
               name: user.name,
               isAdmin: user.isAdmin,
+              workspaces: user.workspaces,
             },
             process.env.JWT_SECRET,
             {
-              expiresIn: "1h",
+              expiresIn: "1d",
             }
           );
           res.status(200).json({
