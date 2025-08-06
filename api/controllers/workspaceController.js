@@ -1,6 +1,3 @@
-const bcrypt = require("bcrypt");
-const jwt = require("jsonwebtoken");
-const BlacklistedToken = require("../models/blacklistedTokenModel");
 const Workspace = require("../models/workspaceModel");
 
 const createWorkspace = (req, res) => {
