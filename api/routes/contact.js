@@ -4,8 +4,8 @@ const authMiddleware = require("../middleware/authMiddleware");
 const contactController = require("../controllers/contactController");
 
 router.use(authMiddleware);
-router.post("/", contactController.createContact);
-router.get("/", contactController.getAllContacts);
+router.post("/addContact", contactController.createContact);
+router.get("/getAll", contactController.getAllContacts);
 router.get("/:contactId", contactController.getContactById);
 router.put("/:contactId", contactController.updateContact);
 router.delete("/:contactId", contactController.deleteContact);
