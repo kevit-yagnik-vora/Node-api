@@ -6,6 +6,7 @@ const userRoutes = require('./api/routes/user');
 const workspaceRoutes = require('./api/routes/workspace');
 const contactRoutes = require('./api/routes/contact');
 const messageRoutes = require('./api/routes/message');
+const campaignRoutes = require('./api/routes/campaign');
 app.use(cors());
 app.use(morgan('dev'));
 app.use(express.urlencoded({ extended: false }));
@@ -15,6 +16,7 @@ app.use('/user', userRoutes);
 app.use('/workspace', workspaceRoutes);
 app.use('/contacts', contactRoutes);
 app.use('/message', messageRoutes);
+app.use('/campaign', campaignRoutes);
 
 app.use((req, res, next) => {
     const error = new Error('Not Found');

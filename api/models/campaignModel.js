@@ -1,4 +1,5 @@
 // models/Campaign.js
+const { text } = require("express");
 const mongoose = require("mongoose");
 
 const campaignSchema = new mongoose.Schema(
@@ -11,9 +12,11 @@ const campaignSchema = new mongoose.Schema(
       default: "Draft",
     },
     selectedTags: [{ type: String }],
-    templateId: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "MessageTemplate",
+    message: {
+      type:{
+        text: { type: String, required: true },
+        imageUrl: { type: String }, // Optional for Text-Image type
+      }
     },
     launchedAt: { type: Date },
     workspaceId: {
@@ -31,7 +34,6 @@ const campaignSchema = new mongoose.Schema(
     messages: [
       {
         contactId: { type: mongoose.Schema.Types.ObjectId, ref: "Contact" },
-        messageContent: { type: String },
         sentAt: { type: Date, default: Date.now },
       },
     ],
